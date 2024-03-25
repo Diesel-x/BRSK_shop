@@ -1,0 +1,48 @@
+﻿@page "/"
+@using Shop_API.Models
+@using System.Collections.Generic
+
+<PageTitle>Каталог товаров</PageTitle>
+
+@inject HttpClient httpClient
+
+
+
+<h3>Каталог товаров</h3>
+
+@if (products != null)
+{
+    <ul>
+        @foreach (var product in products)
+        {
+            <li class="d-flex flex-row">
+                <div>
+                    @product.Name  @product.Cost
+                </div>
+                <button class="btn bg-primary" @onclick="() => AddToCard(product.Id)">Добавить в корзину</button>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    private List<Product> products;
+
+    [Inject]
+    private ApiService ApiService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await ApiService.GetProductsAsync();
+    }
+
+    private async Task AddToCard(int productId)
+    {
+        await ApiService.DeleteProductAsync(productId);
+        products = await ApiService.GetProductsAsync();
+    }
+}

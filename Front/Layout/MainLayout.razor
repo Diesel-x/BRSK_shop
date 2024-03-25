@@ -1,0 +1,16 @@
+﻿@inherits LayoutComponentBase
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <NavLink href="login">
+            <a target="_blank" class="btn">Авторизация</a>
+        </NavLink>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
