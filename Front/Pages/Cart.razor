@@ -1,0 +1,47 @@
+﻿@page "/cart"
+@using Front.Services
+@inject HttpClient Http
+@inject CartService CartService
+@inject ApiService ApiService
+
+<PageTitle>Корзина</PageTitle>
+
+@{
+    var groupedCartItems = CartService.CartItems
+        .GroupBy(item => item.Name)
+        .Select(group => new { Name = group.Key, Cost = group.First().Cost, Count = group.Count() });
+}
+
+<ul>
+    <h1>Корзина</h1>
+
+    <p>Товаров в корзине: @CartService.CartItems.Count</p>
+
+    @foreach (var product in groupedCartItems)
+    {
+        <li class="d-flex flex-row">
+            <div>
+                @product.Name @product.Cost - @product.Count шт.
+            </div>
+        </li>
+        <div>
+            <button @onclick="() => RemoveFromCart(product.Name)">Удалить</button>
+        </div>
+    }
+    <p></p>
+    <button @onclick="() => CreateOrder()">Оформить заказ</button>
+
+</ul>
+
+@code {
+    void RemoveFromCart(string productName)
+    {
+        CartService.CartItems.Remove(CartService.CartItems.FirstOrDefault(p => p.Name == productName));
+    }
+
+    private async Task CreateOrder()
+    {
+        var response = await ApiService.PostProductsAsync(CartService.CartItems, 2);
+    }
+}
+

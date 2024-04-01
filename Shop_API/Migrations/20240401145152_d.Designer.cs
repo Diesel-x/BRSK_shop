@@ -11,8 +11,8 @@ using Shop_API.Data;
 namespace Shop_API.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20240321195330_mig")]
-    partial class mig
+    [Migration("20240401145152_d")]
+    partial class d
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,21 +23,6 @@ namespace Shop_API.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("OrderProduct", b =>
-                {
-                    b.Property<int>("OrdersId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ProductsId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("OrdersId", "ProductsId");
-
-                    b.HasIndex("ProductsId");
-
-                    b.ToTable("OrderProduct");
-                });
 
             modelBuilder.Entity("Shop_API.Models.Order", b =>
                 {
@@ -58,6 +43,32 @@ namespace Shop_API.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("Order");
+                });
+
+            modelBuilder.Entity("Shop_API.Models.OrderBody", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("orderID")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("productCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("productID")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("orderID");
+
+                    b.HasIndex("productID");
+
+                    b.ToTable("OrderBodies");
                 });
 
             modelBuilder.Entity("Shop_API.Models.Product", b =>
@@ -134,21 +145,6 @@ namespace Shop_API.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("OrderProduct", b =>
-                {
-                    b.HasOne("Shop_API.Models.Order", null)
-                        .WithMany()
-                        .HasForeignKey("OrdersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Shop_API.Models.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Shop_API.Models.Order", b =>
                 {
                     b.HasOne("Shop_API.Models.User", "User")
@@ -158,6 +154,25 @@ namespace Shop_API.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Shop_API.Models.OrderBody", b =>
+                {
+                    b.HasOne("Shop_API.Models.Order", "order")
+                        .WithMany()
+                        .HasForeignKey("orderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Shop_API.Models.Product", "product")
+                        .WithMany()
+                        .HasForeignKey("productID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("order");
+
+                    b.Navigation("product");
                 });
 
             modelBuilder.Entity("Shop_API.Models.User", b =>

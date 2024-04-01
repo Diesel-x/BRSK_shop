@@ -1,10 +1,10 @@
-﻿@page "/login"
+﻿@page "/register"
 @using Front.Services
 
 @inject HttpClient HttpClient
 @inject IJSRuntime JS
 
-<h3>Login</h3>
+<h3>Регистрация</h3>
 
 @if (!string.IsNullOrEmpty(ErrorMessage))
 {
@@ -19,19 +19,22 @@
 </div>
 
 <div class="form-group">
+    <label for="name">Имя:</label>
+    <input type="text" class="form-control" id="name" @bind="Name" />
+</div>
+
+<div class="form-group">
     <label for="password">Password:</label>
     <input type="password" class="form-control" id="password" @bind="Password" />
 </div>
 
-<NavLink class="nav-link" href="register">
-    Регистрация
-</NavLink>
+<button type="button" class="btn btn-primary" @onclick="HandleLogin">Register</button>
+<p style="font-size:9px;color:gray;">Женя гей</p>
 
-<button type="button" class="btn btn-primary" @onclick="HandleLogin">Login</button>
-
-@code {
+@code{
     private string Login1 { get; set; }
     private string Password { get; set; }
+    private string Name { get; set; }
     private string ErrorMessage { get; set; }
 
     private async Task HandleLogin()
@@ -39,7 +42,7 @@
         try
         {
             var authService = new AuthService(HttpClient);
-            var res = await authService.Login(Login1, Password);
+            var res = await authService.Register(Login1, Password, Name);
             await JS.InvokeVoidAsync("alert", res);
         }
         catch (Exception ex)

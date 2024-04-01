@@ -1,4 +1,6 @@
-﻿using Shop_API.Models;
+﻿using Front.Pages;
+using Front.Services;
+using Shop_API.Models;
 using System.Net.Http.Json;
 
 namespace Front
@@ -6,6 +8,8 @@ namespace Front
     public class ApiService
     {
         private readonly HttpClient _httpClient;
+
+        //var cart = CartService _cartService;
 
         public ApiService(HttpClient httpClient)
         {
@@ -16,10 +20,20 @@ namespace Front
         {
             return await _httpClient.GetFromJsonAsync<List<Product>>("https://localhost:7239/api/Products");
         }
+        public async Task<List<Order>> GetOrdersAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<List<Order>>("https://localhost:7239/api/Order");
+        }
 
         public async Task<Product> GetProductDetailsAsync(int productId)
         {
             return await _httpClient.GetFromJsonAsync<Product>($"https://localhost:7239/api/Products/{productId}");
+        }
+
+        public async Task<bool> PostProductsAsync(List<Product> products, int userId)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"https://localhost:7239/api/Orders?userID={userId}", products);
+            return response.IsSuccessStatusCode;
         }
 
         public async Task DeleteProductAsync(int productId)

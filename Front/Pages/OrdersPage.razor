@@ -1,0 +1,18 @@
+﻿@using Shop_API.Models;
+@using Front.Services;
+@inject HttpClient HttpClient;
+@inject AuthService authService;
+
+<h3>Orders</h3>
+@foreach (var order in OrderItems)
+{
+    <div style="border: 1px solid gray; padding:10px;">
+        <p>@order.Id</p>
+        <p>Сумма: @order.SumCost</p>
+    </div>
+}
+
+
+@code {
+    public List<Order> OrderItems { get; set; } = new();
+}

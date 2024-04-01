@@ -6,26 +6,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Shop_API.Migrations
 {
     /// <inheritdoc />
-    public partial class mig : Migration
+    public partial class a : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Product",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Cost = table.Column<int>(type: "integer", nullable: false),
-                    Count = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Product", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Role",
                 columns: table => new
@@ -83,27 +68,24 @@ namespace Shop_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrderProduct",
+                name: "Product",
                 columns: table => new
                 {
-                    OrdersId = table.Column<int>(type: "integer", nullable: false),
-                    ProductsId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Cost = table.Column<int>(type: "integer", nullable: false),
+                    Count = table.Column<int>(type: "integer", nullable: false),
+                    OrderId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrderProduct", x => new { x.OrdersId, x.ProductsId });
+                    table.PrimaryKey("PK_Product", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_OrderProduct_Order_OrdersId",
-                        column: x => x.OrdersId,
+                        name: "FK_Product_Order_OrderId",
+                        column: x => x.OrderId,
                         principalTable: "Order",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_OrderProduct_Product_ProductsId",
-                        column: x => x.ProductsId,
-                        principalTable: "Product",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -112,9 +94,9 @@ namespace Shop_API.Migrations
                 column: "UserID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderProduct_ProductsId",
-                table: "OrderProduct",
-                column: "ProductsId");
+                name: "IX_Product_OrderId",
+                table: "Product",
+                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_User_RoleId",
@@ -126,13 +108,10 @@ namespace Shop_API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "OrderProduct");
+                name: "Product");
 
             migrationBuilder.DropTable(
                 name: "Order");
-
-            migrationBuilder.DropTable(
-                name: "Product");
 
             migrationBuilder.DropTable(
                 name: "User");

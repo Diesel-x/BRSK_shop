@@ -14,6 +14,7 @@ namespace Shop_API.Data
         {
         }
 
+        public DbSet<Shop_API.Models.OrderBody> OrderBodies  { get; set; } = default!;
         public DbSet<Shop_API.Models.Product> Product { get; set; } = default!;
         public DbSet<Shop_API.Models.User> User { get; set; } = default!;
         public DbSet<Shop_API.Models.Order> Order { get; set; } = default!;

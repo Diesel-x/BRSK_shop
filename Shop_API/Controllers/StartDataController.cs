@@ -66,6 +66,7 @@ namespace Shop_API.Controllers
                 {
                     products[1],
                     products[2],
+                    products[2],
                     products[2]
                 };
 
@@ -76,7 +77,6 @@ namespace Shop_API.Controllers
                 {
                     var order = new Order
                     {
-                        Products = orderComposition,
                         SumCost = sumOrder,
                         User = user,
                         UserID = user.Id
@@ -84,7 +84,13 @@ namespace Shop_API.Controllers
 
                     _context.Order.Add(order);
                     await _context.SaveChangesAsync();
+                    var orderProducts = orderComposition.Distinct().Select(p => new OrderBody { orderID = order.Id, productID = p.Id, productCount = orderComposition.Count(p2 => p2 == p) });
+
+
+                    _context.OrderBodies.AddRange(orderProducts);
+                    await _context.SaveChangesAsync();
                 }
+
 
                 return Ok("Тестовые данные успешно созданы.");
             }

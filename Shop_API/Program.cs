@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Shop_API.Data;
 using Shop_API.Models;
+using System.Text;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DBContext>(options =>
@@ -15,19 +17,31 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//        .AddJwtBearer(options =>
-//        {
-//            options.TokenValidationParameters = new TokenValidationParameters
-//            {
-//                ValidateIssuer = true,
-//                ValidateAudience = false,
-//                ValidateLifetime = true,
-//                ValidateIssuerSigningKey = true,
-//                ValidIssuer = "your_issuer_here",
-//                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("your_secret_key_here"))
-//            };
-//        });
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.RequireHttpsMetadata = false;
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                // укзывает, будет ли валидироваться издатель при валидации токена
+                ValidateIssuer = true,
+                // строка, представляющая издателя
+                ValidIssuer = AuthOptions.ISSUER,
+
+                // будет ли валидироваться потребитель токена
+                ValidateAudience = true,
+                // установка потребителя токена
+                ValidAudience = AuthOptions.AUDIENCE,
+                // будет ли валидироваться время существования
+                ValidateLifetime = true,
+
+                // установка ключа безопасности
+                IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+                // валидация ключа безопасности
+                ValidateIssuerSigningKey = true,
+            };
+        });
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
@@ -42,9 +56,11 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseHttpsRedirection();
 app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-app.UseAuthorization();
 
 app.MapControllers();
 
