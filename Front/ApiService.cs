@@ -1,6 +1,7 @@
 ﻿using Front.Pages;
 using Front.Services;
 using Shop_API.Models;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace Front
@@ -32,6 +33,11 @@ namespace Front
 
         public async Task<bool> PostProductsAsync(List<Product> products, int userId)
         {
+            //var requestUrl = $"https://localhost:7239/api/Orders?userID={userId}";
+            //var request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+            //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", CartService.ApiKey);
+
+
             var response = await _httpClient.PostAsJsonAsync($"https://localhost:7239/api/Orders?userID={userId}", products);
             return response.IsSuccessStatusCode;
         }

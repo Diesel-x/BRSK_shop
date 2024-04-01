@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using Microsoft.JSInterop;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Net.Http.Json;
 
@@ -69,9 +70,11 @@ namespace Front.Services
                     apiKey = token;
                     return "Успешная регистрация";
                 }
-                return "Иди нахуй\n"+content;
+                return "Регистрация не прошла\n"+content;
             }
-            else return "Иди нахуй\n" + response.StatusCode;
+            else return "Регистрация не прошла\n" + response.StatusCode;
         }
     }
+
+
 }

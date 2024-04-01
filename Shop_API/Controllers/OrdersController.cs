@@ -12,7 +12,7 @@ using Shop_API.Models;
 namespace Shop_API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     [ApiController]
     public class OrdersController : ControllerBase
     {
@@ -86,6 +86,10 @@ namespace Shop_API.Controllers
                 UserID = userID
             };
             _context.Order.Add(order);
+            await _context.SaveChangesAsync();
+
+            var orderProducts = products.Distinct().Select(p => new OrderBody { orderID = order.Id, productID = p.Id, productCount = products.Count(p2 => p2 == p) });
+            _context.OrderBodies.AddRange(orderProducts);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetOrder", new { id = order.Id }, order);

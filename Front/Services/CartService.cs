@@ -5,8 +5,7 @@ namespace Front.Services
 {
     public class CartService
     {
-
-    
         public List<Product> CartItems { get; set; } = new List<Product>();
+        public string ApiKey { get; set; }
     }
 }
