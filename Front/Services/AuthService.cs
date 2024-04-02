@@ -2,12 +2,15 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Net.Http.Json;
+using Blazored.LocalStorage;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Front.Services
 {
     public class AuthService
     {
         private readonly HttpClient _httpClient;
+        private readonly ILocalStorageService _localStorage;
         public int userId {  get; set; }
 
         public string apiKey { get; set; }
@@ -15,7 +18,7 @@ namespace Front.Services
         public AuthService(HttpClient httpClient)
         {
             httpClient.BaseAddress = new Uri("https://localhost:7239/api/Account/");
-            _httpClient = httpClient;
+            //_localStorage = localStorage;
         }
 
         //private int getUserIdFromToken(string token)
@@ -41,6 +44,7 @@ namespace Front.Services
                 {
                     var token = content.Split()[1];
                     apiKey = token;
+                    //await _localStorage.SetItemAsync("key", apiKey);
                     return "Успешная авторизация";
                 }
                 return "Авторизация не прошла\n" + content;
@@ -68,7 +72,9 @@ namespace Front.Services
                 {
                     var token = content.Split()[1];
                     apiKey = token;
+                    //await _localStorage.SetItemAsync("key", apiKey);
                     return "Успешная регистрация";
+
                 }
                 return "Регистрация не прошла\n"+content;
             }
