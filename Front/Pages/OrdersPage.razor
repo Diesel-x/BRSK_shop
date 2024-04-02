@@ -2,10 +2,17 @@
 @using Front.Services;
 @inject HttpClient HttpClient;
 @inject AuthService authService;
+@using Blazored.LocalStorage
+@inject ILocalStorageService localStorage
+
+
 
 <h3>Orders</h3>
 @foreach (var order in OrderItems)
 {
+    <p>Апи ключ: @key</p>
+    <button class="btn btn-primary" @onclick="OnInitializedAsync">Обновить</button>
+
     <div style="border: 1px solid gray; padding:10px;">
         <p>@order.Id</p>
         <p>Сумма: @order.SumCost</p>
@@ -14,4 +21,12 @@
 
 @code {
     public List<Order> OrderItems { get; set; } = new();
+
+    string key = "";
+    protected override async Task OnInitializedAsync()
+    {
+        // Попытка получения текущего значения счетчика из локального хранилища
+        key = await localStorage.GetItemAsync<string>("key");
+    }
+
 }

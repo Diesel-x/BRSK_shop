@@ -43,7 +43,7 @@
     {
         try
         {
-            var authService = new AuthService(HttpClient);
+            var authService = new AuthService(HttpClient, localStorage);
             var res = await authService.Register(Login1, Password, Name);
             await JS.InvokeVoidAsync("alert", res);
         }
