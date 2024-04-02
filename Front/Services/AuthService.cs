@@ -74,6 +74,7 @@ namespace Front.Services
             }
             else return "Регистрация не прошла\n" + response.StatusCode;
         }
+
     }
 
 

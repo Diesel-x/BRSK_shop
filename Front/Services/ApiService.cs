@@ -1,10 +1,9 @@
 ﻿using Front.Pages;
-using Front.Services;
 using Shop_API.Models;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
-namespace Front
+namespace Front.Services
 {
     public class ApiService
     {
@@ -31,7 +30,7 @@ namespace Front
             return await _httpClient.GetFromJsonAsync<Product>($"https://localhost:7239/api/Products/{productId}");
         }
 
-        public async Task<bool> PostProductsAsync(List<Product> products, int userId)
+        public async Task<string> PostProductsAsync(List<Product> products, int userId)
         {
             //var requestUrl = $"https://localhost:7239/api/Orders?userID={userId}";
             //var request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
@@ -39,7 +38,11 @@ namespace Front
 
 
             var response = await _httpClient.PostAsJsonAsync($"https://localhost:7239/api/Orders?userID={userId}", products);
-            return response.IsSuccessStatusCode;
+            if (response.IsSuccessStatusCode)
+            {
+                return "Заказ создан";
+            }
+            return "Ошибка";
         }
 
         public async Task DeleteProductAsync(int productId)

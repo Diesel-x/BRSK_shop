@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Shop_API.Data;
 using Shop_API.Models;
-using System.Text;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DBContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DBContext") ?? throw new InvalidOperationException("Connection string 'DBContext' not found.")));
@@ -45,14 +42,13 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-
 app.UseAuthentication();
 app.UseAuthorization();
 

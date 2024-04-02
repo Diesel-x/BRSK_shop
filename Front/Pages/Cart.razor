@@ -4,6 +4,8 @@
 @inject HttpClient Http
 @inject CartService CartService
 @inject ApiService ApiService
+@inject IJSRuntime JS
+
 
 <PageTitle>Корзина</PageTitle>
 
@@ -15,8 +17,8 @@
 
 <ul>
     <h1>Корзина</h1>
-
-    <p>Товаров в корзине: @CartService.CartItems.Count</p>
+\
+<p>Товаров в корзине: @CartService.CartItems.Count</p>
 
     @foreach (var product in groupedCartItems)
     {
@@ -26,11 +28,11 @@
             </div>
         </li>
         <div>
-            <button @onclick="() => RemoveFromCart(product.Name)">Удалить</button>
+            <button class ="btn alert-danger" @onclick="() => RemoveFromCart(product.Name)">Удалить</button>
         </div>
     }
     <p></p>
-    <button @onclick="() => CreateOrder()">Оформить заказ</button>
+    <button class="btn bg-primary" @onclick="() => CreateOrder()">Оформить заказ</button>
 
 </ul>
 
@@ -43,6 +45,7 @@
     private async Task CreateOrder()
     {
         var response = await ApiService.PostProductsAsync(CartService.CartItems, 2);
+        await JS.InvokeVoidAsync("alert", response);
     }
 }
 
