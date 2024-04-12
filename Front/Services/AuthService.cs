@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http.Json;
 using Blazored.LocalStorage;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.AspNetCore.Components;
 
 namespace Front.Services
 {
@@ -11,23 +12,18 @@ namespace Front.Services
     {
         private readonly HttpClient _httpClient;
         private readonly ILocalStorageService _localStorage;
+        private readonly NavigationManager _navigationManager;
         public int userId {  get; set; }
-
         public string apiKey { get; set; }
 
-        public AuthService(HttpClient httpClient, ILocalStorageService localStorage)
+        public AuthService(HttpClient httpClient, ILocalStorageService localStorage, NavigationManager navigationManager)
         {
             httpClient.BaseAddress = new Uri("https://localhost:7239/api/Account/");
             _httpClient = httpClient;
             _localStorage = localStorage;
+            _navigationManager = navigationManager;
         }
 
-        //private int getUserIdFromToken(string token)
-        //{
-        //    var handler = new JwtSecurityTokenHandler();
-        //    var jsonToken = handler.ReadToken(token);
-        //    var tokenS = jsonToken as JwtSecurityToken;
-        //}
         public async Task<string> Login(string login, string password)
         {
             var loginData = new
@@ -46,6 +42,7 @@ namespace Front.Services
                     var token = content.Split()[1];
                     apiKey = token;
                     await _localStorage.SetItemAsync("key", apiKey);
+                    _navigationManager.NavigateTo("/", true);
                     return "Успешная авторизация";
                 }
                 return "Авторизация не прошла\n" + content;
@@ -64,7 +61,7 @@ namespace Front.Services
                 password,
                 name
             };
-            _httpClient.CancelPendingRequests();
+            //_httpClient.CancelPendingRequests();
 
             var response = await _httpClient.PostAsJsonAsync("register", loginData);
             if (response.IsSuccessStatusCode){
@@ -74,6 +71,7 @@ namespace Front.Services
                     var token = content.Split()[1];
                     apiKey = token;
                     await _localStorage.SetItemAsync("key", apiKey);
+                    _navigationManager.NavigateTo("/", true);
                     return "Успешная регистрация";
 
                 }
@@ -82,6 +80,11 @@ namespace Front.Services
             else return "Регистрация не прошла\n" + response.StatusCode;
         }
 
+        public async Task Logout()
+        {
+            apiKey = null;
+            await _localStorage.RemoveItemAsync("key");
+        }
     }
 
 

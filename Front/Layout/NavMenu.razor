@@ -1,9 +1,13 @@
-﻿@using Front.Services
+﻿@using Blazored.LocalStorage
+@using Front.Services
 @inject CartService CartService;
+@inject ILocalStorageService localStorage
+@inject IJSRuntime JS
+@inject NavigationManager Navigation;
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Бырска шоп</a>
+        <a class="navbar-brand" href="">БРСК шоп</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -12,16 +16,38 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
+        
+        @if (UserName != "")
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link d-flex flex-row justify-content-center align-items-center">
+                <p class="text-light fs-4">@UserName</p>
+            </NavLink>
+        </div>
+        }
+
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Каталог РАБотников
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Каталог
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="login">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Войти
-            </NavLink>
-        </div>
+        @if (UserName != "")
+        {
+            <div class="nav-item px-3" @onclick="HandleLogout">
+                <NavLink class="nav-link">
+                    <span class="bi bi-plus-square-fill-nav-menu bg-danger" aria-hidden="true"></span> Выйти
+                </NavLink>
+            </div>
+        }
+        else
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="login">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Войти
+                </NavLink>
+            </div>
+        }
+
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="cart">
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true">@CartService.CartItems.Count</span> Корзина 
@@ -36,8 +62,10 @@
 </div>
 
 @code {
-
+    string UserName = "";
+    string Key = "";
     private bool collapseNavMenu = true;
+
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
@@ -48,14 +76,29 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.Run(async () => // Кринж кастыль, потому что страница автоматически не обновлялась при изменении CardItems
+        Key = await localStorage.GetItemAsync<string>("key");
+        JwtToken tokenData = JwtHelper.DecodeJwtToken(Key);
+        UserName = tokenData.UserName;
+        await Task.Run(async () => // Кринж костыль, потому что страница автоматически не обновлялась при изменении CardItems
         {
             while (true)
             {
+                JwtToken tokenData = JwtHelper.DecodeJwtToken(await localStorage.GetItemAsync<string>("key"));
+                UserName = tokenData.UserName;
                 StateHasChanged();
                 await Task.Delay(100);
             }
         });
         await base.OnInitializedAsync();
+    }
+
+    private async Task HandleLogout()
+    {
+        Key = "";
+        UserName = "";
+        HttpClient httpclient = new HttpClient();
+        var authService = new AuthService(httpclient, localStorage, Navigation);
+        await authService.Logout();
+        StateHasChanged();
     }
 }

@@ -46,8 +46,10 @@ namespace Shop_API.Controllers
 
             _context.User.Add(user);
             await _context.SaveChangesAsync();
-            var claims = new List<Claim> { new Claim(ClaimTypes.Name, user.Login),
-                                           new Claim(ClaimTypes.Role, user.RoleId.ToString())};
+            var claims = new List<Claim> {
+                                           new Claim(ClaimTypes.Name, user.Name),
+                                           new Claim(ClaimTypes.Role, user.RoleId.ToString()),
+                                            new Claim(ClaimTypes.Email, user.Login)};
             var jwt = new JwtSecurityToken(
                     issuer: AuthOptions.ISSUER,
                     audience: AuthOptions.AUDIENCE,
@@ -70,8 +72,10 @@ namespace Shop_API.Controllers
             if (!VerifyPasswordHash(body.password, user.PasswordHash, user.PasswordSalt))
                 return Unauthorized("Invalid password");
 
-            var claims = new List<Claim> { new Claim(ClaimTypes.Name, user.Login),
-                                           new Claim(ClaimTypes.Role, user.RoleId.ToString())};
+            var claims = new List<Claim> { 
+                                           new Claim(ClaimTypes.Name, user.Name),
+                                           new Claim(ClaimTypes.Role, user.RoleId.ToString()),
+                                            new Claim(ClaimTypes.Email, user.Login)};
             var jwt = new JwtSecurityToken(
                     issuer: AuthOptions.ISSUER,
                     audience: AuthOptions.AUDIENCE,

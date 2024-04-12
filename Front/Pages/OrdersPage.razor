@@ -24,8 +24,7 @@
     string key = "";
     protected override async Task OnInitializedAsync()
     {
-        // Попытка получения текущего значения счетчика из локального хранилища
-        key = await localStorage.GetItemAsync<string>("key");
+        JwtToken tokenData = JwtHelper.DecodeJwtToken(await localStorage.GetItemAsync<string>("key"));
+        key = tokenData.UserName;
     }
-
 }

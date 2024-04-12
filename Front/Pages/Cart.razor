@@ -1,10 +1,12 @@
 ﻿@page "/cart"
+@using Blazored.LocalStorage
 @using Front.Services
 @using Shop_API.Models
 @inject HttpClient Http
 @inject CartService CartService
 @inject ApiService ApiService
 @inject IJSRuntime JS
+@inject ILocalStorageService localStorage;
 
 
 <PageTitle>Корзина</PageTitle>
@@ -33,19 +35,46 @@
     }
     <p></p>
     <button class="btn bg-primary" @onclick="() => CreateOrder()">Оформить заказ</button>
+    <p>@key</p>
 
 </ul>
 
 @code {
+    string key;
     void RemoveFromCart(string productName)
     {
         CartService.CartItems.Remove(CartService.CartItems.FirstOrDefault(p => p.Name == productName));
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        JwtToken tokenData = JwtHelper.DecodeJwtToken(await localStorage.GetItemAsync<string>("key"));
+        key = tokenData.UserLogin;
+    }
+
     private async Task CreateOrder()
     {
-        var response = await ApiService.PostProductsAsync(CartService.CartItems, 2);
-        await JS.InvokeVoidAsync("alert", response);
+        JwtToken tokenData = JwtHelper.DecodeJwtToken(await localStorage.GetItemAsync<string>("key"));
+        List<User> users = await ApiService.GetUsers();
+
+        if (users != null && users.Count > 0)
+        {
+            var user = users.FirstOrDefault(x => x.Login == tokenData.UserLogin);
+            await JS.InvokeVoidAsync(tokenData.UserName);
+            if (user != null)
+            {
+                var response = await ApiService.PostProductsAsync(CartService.CartItems, user.Id);
+                await JS.InvokeVoidAsync("Заказ");
+            }
+            else
+            {
+                // Обработка случая, когда пользователь не найден
+            }
+        }
+        else
+        {
+            // Обработка случая, когда список пользователей пуст или равен null
+        }
     }
 }
 

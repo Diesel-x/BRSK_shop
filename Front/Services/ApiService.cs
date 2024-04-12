@@ -30,12 +30,27 @@ namespace Front.Services
             return await _httpClient.GetFromJsonAsync<Product>($"https://localhost:7239/api/Products/{productId}");
         }
 
+        public async Task<User> GetUser(string login)
+        {
+            var users = await _httpClient.GetFromJsonAsync<List<User>>($"https://localhost:7239/api/Users");
+            var user = users.FirstOrDefault(x => x.Login == login);
+            if (user != null)
+            {
+                return user;
+            }
+            return user;
+        }
+
+        public async Task<List<User>> GetUsers()
+        { 
+            return await _httpClient.GetFromJsonAsync<List<User>>($"https://localhost:7239/api/Users");
+        }
+
         public async Task<string> PostProductsAsync(List<Product> products, int userId)
         {
             //var requestUrl = $"https://localhost:7239/api/Orders?userID={userId}";
             //var request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
             //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", CartService.ApiKey);
-
 
             var response = await _httpClient.PostAsJsonAsync($"https://localhost:7239/api/Orders?userID={userId}", products);
             if (response.IsSuccessStatusCode)

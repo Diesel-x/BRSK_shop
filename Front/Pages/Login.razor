@@ -5,6 +5,7 @@
 @inject IJSRuntime JS
 @using Blazored.LocalStorage
 @inject ILocalStorageService localStorage
+@inject NavigationManager Navigation
 
 <h3>Login</h3>
 
@@ -29,18 +30,21 @@
     Регистрация
 </NavLink>
 
-<button type="button" class="btn btn-primary" @onclick="HandleLogin">Войтт</button>
+<button type="button" class="btn btn-primary" @onclick="HandleLogin">Войти</button>
 
 @code {
     private string Login1 { get; set; }
     private string Password { get; set; }
     private string ErrorMessage { get; set; }
 
+
+
     private async Task HandleLogin()
     {
         try
         {
-            var authService = new AuthService(HttpClient, localStorage);
+            HttpClient httpclient = new HttpClient();
+            var authService = new AuthService(httpclient, localStorage, Navigation);
             var res = await authService.Login(Login1, Password);
             await JS.InvokeVoidAsync("alert", res);
         }
