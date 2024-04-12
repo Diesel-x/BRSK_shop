@@ -49,7 +49,7 @@ namespace Shop_API.Controllers
             var claims = new List<Claim> {
                                            new Claim(ClaimTypes.Name, user.Name),
                                            new Claim(ClaimTypes.Role, user.RoleId.ToString()),
-                                            new Claim(ClaimTypes.Email, user.Login)};
+                                           new Claim(ClaimTypes.Email, user.Login)};
             var jwt = new JwtSecurityToken(
                     issuer: AuthOptions.ISSUER,
                     audience: AuthOptions.AUDIENCE,

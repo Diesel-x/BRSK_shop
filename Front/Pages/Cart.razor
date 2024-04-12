@@ -57,24 +57,16 @@
         JwtToken tokenData = JwtHelper.DecodeJwtToken(await localStorage.GetItemAsync<string>("key"));
         List<User> users = await ApiService.GetUsers();
 
-        if (users != null && users.Count > 0)
+        var user = users.FirstOrDefault(x => x.Login == tokenData.UserLogin);
+        if (user != null)
         {
-            var user = users.FirstOrDefault(x => x.Login == tokenData.UserLogin);
-            await JS.InvokeVoidAsync(tokenData.UserName);
-            if (user != null)
-            {
-                var response = await ApiService.PostProductsAsync(CartService.CartItems, user.Id);
-                await JS.InvokeVoidAsync("Заказ");
-            }
-            else
-            {
-                // Обработка случая, когда пользователь не найден
-            }
+
+            var response = await ApiService.PostProductsAsync(CartService.CartItems, user.Id);
         }
         else
         {
-            // Обработка случая, когда список пользователей пуст или равен null
         }
     }
 }
+
 

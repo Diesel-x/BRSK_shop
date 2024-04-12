@@ -31,7 +31,7 @@ public class JwtHelper
         {
             UserName = userName,
             UserRole = userRole,
-            UserLogin = userRole
+            UserLogin = userLogin
         };
     }
 }
