@@ -3,28 +3,45 @@
 @using Blazored.LocalStorage
 @inject ILocalStorageService localStorage
 @page "/orderspage"
+@inject NavigationManager nav
 
 
 
-<h3>Orders</h3>
-<p>Апи ключ: @key</p>
-@foreach (var order in OrderItems)
+<h3>Заказы</h3>
+@foreach (var order in orders)
 {
 
 
     <div style="border: 1px solid gray; padding:10px;">
-        <p>@order.Id</p>
+        <p>Номер заказа: @order.Id</p>
         <p>Сумма: @order.SumCost</p>
+        <p class="fw-bold">Состав:</p>
+        @foreach (var body in orderBodies.Where(b => b.orderID == order.Id))
+        {
+            <div class="d-flex flex-row gap-3">
+                <p>@products.FirstOrDefault(p => p.Id == body.productID).Name</p>
+                <p>@products.FirstOrDefault(p => p.Id == body.productID).Cost руб</p>
+                <p>@body.productCount штук</p>
+            </div>
+        }
     </div>
 }
 
 @code {
     public List<Order> OrderItems { get; set; } = new();
-
+    List<Order> orders = new List<Order>();
+    List<OrderBody> orderBodies = new List<OrderBody>();
+    List<Product> products = new List<Product>();
     string key = "";
     protected override async Task OnInitializedAsync()
     {
         JwtToken tokenData = JwtHelper.DecodeJwtToken(await localStorage.GetItemAsync<string>("key"));
         key = tokenData.UserName;
+        HttpClient httpClient = new HttpClient();
+        ApiService apiService = new ApiService(httpClient, nav);
+        orders = await apiService.GetUserOrders(tokenData.UserLogin);
+        orderBodies = await apiService.GetOrderBodys();
+        products = await apiService.GetProductsAsync();
+        StateHasChanged();
     }
 }

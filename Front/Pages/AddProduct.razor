@@ -1,0 +1,32 @@
+﻿@page "/addproduct"
+@using Front.Services
+
+@inject HttpClient HttpClient
+@inject IJSRuntime JS
+@using Blazored.LocalStorage
+@inject ILocalStorageService localStorage
+@inject NavigationManager Navigation
+
+    <div class="form-control gap-2">
+        <div class="d-flex flex-column m-2">
+            <p>Название:</p>
+            <input @bind="name" />
+        </div>
+        <div class="d-flex flex-column m-2">
+            <p>Цена:</p>
+            <input type="number" @bind="cost" />
+        </div>
+        <button @onclick="HandleAddProduct">Добавить продукт</button>
+    </div>
+
+@code {
+    string name = "";
+    int cost = 0;
+    private async Task HandleAddProduct()
+    {
+        HttpClient httpClient = new HttpClient();
+        ApiService apiService = new ApiService(httpClient, Navigation);
+        var res = await apiService.PostAddProduct(name, cost);
+        JS.InvokeVoidAsync("alert", res);
+    }
+}

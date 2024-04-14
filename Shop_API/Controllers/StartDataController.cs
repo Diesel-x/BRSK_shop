@@ -45,7 +45,6 @@ namespace Shop_API.Controllers
                 var users = new List<User>
                 {
                     new User { Name = "Админка",
-                        Role = roles.First(r => r.Name == "Администратор"),
                         RoleId = roles.First(r => r.Name == "Администратор").Id,
                         Login = "admin",
                         PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("admin")),
@@ -53,7 +52,6 @@ namespace Shop_API.Controllers
                     },
                     new User { Name = "Клиентик",
                         RoleId = roles.First(r => r.Name == "Клиент").Id,
-                        Role = roles.First(r => r.Name == "Клиент"),
                         Login = "user",
                         PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("user")),
                         PasswordSalt = hmac.Key
@@ -78,7 +76,6 @@ namespace Shop_API.Controllers
                     var order = new Order
                     {
                         SumCost = sumOrder,
-                        User = user,
                         UserID = user.Id
                     };
 

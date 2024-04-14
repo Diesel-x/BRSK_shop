@@ -19,8 +19,9 @@
 
 <ul>
     <h1>Корзина</h1>
-\
-<p>Товаров в корзине: @CartService.CartItems.Count</p>
+
+    <p>Товаров в корзине: @CartService.CartItems.Count</p>
+    <p>Сумма: @CartService.CartItems.Sum(CartItems => CartItems.Cost)</p>
 
     @foreach (var product in groupedCartItems)
     {
@@ -34,22 +35,26 @@
         </div>
     }
     <p></p>
-    <button class="btn bg-primary" @onclick="() => CreateOrder()">Оформить заказ</button>
-    <p>@key</p>
+
+    @if (UserName != "" && CartService.CartItems.Count > 0)
+    {
+        <p>Оформление заказа на имя @UserName</p>
+        <button class="btn bg-primary" @onclick="() => CreateOrder()">Оформить заказ</button>
+    }
 
 </ul>
 
 @code {
-    string key;
+    string UserName = "";
     void RemoveFromCart(string productName)
-    {
+    { 
         CartService.CartItems.Remove(CartService.CartItems.FirstOrDefault(p => p.Name == productName));
     }
 
     protected override async Task OnInitializedAsync()
     {
         JwtToken tokenData = JwtHelper.DecodeJwtToken(await localStorage.GetItemAsync<string>("key"));
-        key = tokenData.UserLogin;
+        UserName = tokenData.UserName;
     }
 
     private async Task CreateOrder()

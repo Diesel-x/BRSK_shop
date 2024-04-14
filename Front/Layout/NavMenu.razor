@@ -53,17 +53,33 @@
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true">@CartService.CartItems.Count</span> Корзина 
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="orderspage">
-                <span class="bi bi bi-list-nested-nav-menu" aria-hidden="true"></span> Заказы
-            </NavLink>
-        </div>
+
+        @if (UserName != "")
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="orderspage">
+                    <span class="bi bi bi-list-nested-nav-menu" aria-hidden="true"></span> Заказы
+                </NavLink>
+            </div>
+        }
+
+        @if (role == "1")
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="addproduct">
+                    <span class="bi bi bi-list-nested-nav-menu" aria-hidden="true"></span> Добавить продукт
+                </NavLink>
+            </div>
+        }
+        @role
+        
     </nav>
 </div>
 
 @code {
     string UserName = "";
     string Key = "";
+    string role = "";
     private bool collapseNavMenu = true;
 
 
@@ -77,14 +93,17 @@
     protected override async Task OnInitializedAsync()
     {
         Key = await localStorage.GetItemAsync<string>("key");
-        JwtToken tokenData = JwtHelper.DecodeJwtToken(Key);
-        UserName = tokenData.UserName;
+
+        if (Key != "" && Key != null)
+        {
+            JwtToken tokenData = JwtHelper.DecodeJwtToken(Key);
+            UserName = tokenData.UserName;
+            role = tokenData.UserRole;
+        }
         await Task.Run(async () => // Кринж костыль, потому что страница автоматически не обновлялась при изменении CardItems
         {
             while (true)
             {
-                JwtToken tokenData = JwtHelper.DecodeJwtToken(await localStorage.GetItemAsync<string>("key"));
-                UserName = tokenData.UserName;
                 StateHasChanged();
                 await Task.Delay(100);
             }
@@ -96,6 +115,7 @@
     {
         Key = "";
         UserName = "";
+        role = "";
         HttpClient httpclient = new HttpClient();
         var authService = new AuthService(httpclient, localStorage, Navigation);
         await authService.Logout();

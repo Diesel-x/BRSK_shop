@@ -16,16 +16,14 @@
     <ul>
         @foreach (var product in products)
         {
-            <li class="d-flex flex-row">
-                <div>
-                    @product.Name  @product.Cost
+            <li class="d-flex flex-row m-2">
+                <div class="m-1">
+                    @product.Name  @product.Cost руб
                 </div>
                 <button class="btn bg-primary" @onclick="() => AddToCard(product.Id)">Добавить в корзину</button>
             </li>
         }
     </ul>
-
-    @CartService.CartItems.Count
 }
 else
 {

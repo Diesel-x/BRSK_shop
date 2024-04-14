@@ -25,9 +25,25 @@ namespace Shop_API.Controllers
 
         // GET: api/Orders
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders(int userId)
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
-            return await _context.Order.Where(o => o.UserID == userId).ToListAsync();
+            return await _context.Order.AsNoTracking().ToListAsync();
+        }
+
+
+        // GET: api/Orders/userorders
+        [HttpGet("userorders")]
+        public async Task<ActionResult<IEnumerable<Order>>> GetUserOrders(string login)
+        {
+            var user = await _context.User.FirstOrDefaultAsync(u => u.Login == login);
+            if (user == null)
+            {
+                return NotFound($"User with login '{login}' not found.");
+            }
+
+            var userId = user.Id;
+            var orders = await _context.Order.Where(o => o.UserID == userId).ToListAsync();
+            return orders;
         }
 
         // GET: api/Orders/5
@@ -75,6 +91,8 @@ namespace Shop_API.Controllers
             return NoContent();
         }
 
+
+
         // POST: api/Orders
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -88,7 +106,17 @@ namespace Shop_API.Controllers
             _context.Order.Add(order);
             await _context.SaveChangesAsync();
 
-            var orderProducts = products.Distinct().Select(p => new OrderBody { orderID = order.Id, productID = p.Id, productCount = products.Count(p2 => p2 == p) });
+            //var orderProducts = products.Distinct().Select(p => new OrderBody { orderID = order.Id, productID = p.Id, productCount = products.Count(p2 => p2 == p) });
+
+            var orderProducts = products
+                .GroupBy(p => p.Id)
+                .Select(group => new OrderBody
+                {
+                    orderID = order.Id,
+                    productID = group.Key, 
+                    productCount = group.Count() 
+                });
+
             _context.OrderBodies.AddRange(orderProducts);
             await _context.SaveChangesAsync();
 
