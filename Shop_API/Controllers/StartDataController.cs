@@ -34,9 +34,9 @@ namespace Shop_API.Controllers
 
                 var products = new List<Product>
                 {
-                    new Product { Name = "Красильников Роман", Cost = 100, Count = 2},
-                    new Product { Name = "Гойдов Искандер", Cost = 1000, Count = 6 },
-                    new Product { Name = "Зверь Никиточка", Cost = 10, Count = 9 }
+                    new Product { Name = "Игрушка", Cost = 1000, Count = 2},
+                    new Product { Name = "Мороженное", Cost = 60, Count = 6 },
+                    new Product { Name = "Набор посуды", Cost = 1500, Count = 9 }
                 };
                 _context.Product.AddRange(products);
                 await _context.SaveChangesAsync();
@@ -44,13 +44,13 @@ namespace Shop_API.Controllers
                 var hmac = new HMACSHA512();
                 var users = new List<User>
                 {
-                    new User { Name = "Админка",
+                    new User { Name = "Админ",
                         RoleId = roles.First(r => r.Name == "Администратор").Id,
                         Login = "admin",
                         PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("admin")),
                         PasswordSalt = hmac.Key
                     },
-                    new User { Name = "Клиентик",
+                    new User { Name = "Баянов Дияз Гайсаевич",
                         RoleId = roles.First(r => r.Name == "Клиент").Id,
                         Login = "user",
                         PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("user")),
